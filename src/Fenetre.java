@@ -18,7 +18,7 @@ public class Fenetre extends JFrame{
 
     private JPanel pan = new JPanel();
     private Box projectsPan = Box.createVerticalBox();
-    private JScrollPane scroll = new JScrollPane(projectsPan);
+    private JScrollPane scroll = new JScrollPane(projectsPan, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
     private LinkedList<Project> projects; 
 
     public Fenetre(){
@@ -53,7 +53,7 @@ public class Fenetre extends JFrame{
 
         plusButton.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent event){
-                projectsPan.add(new Project("test"));
+                projectsPan.add(new Project("test", "2018-09-23 21:56", "2019-01-01 23:42"));
                 setVisible(true);
             }
         });
@@ -61,8 +61,8 @@ public class Fenetre extends JFrame{
 
     private LinkedList<Project> getProjects(){
         LinkedList<Project> res = new LinkedList<Project>();
-        res.add(new Project("Projet 1"));
-        res.add(new Project("Projet 2"));
+        res.add(new Project("Projet 1", "2017-12-18 14:23", "2018-04-08 23:42"));
+        res.add(new Project("Projet 2", "2017-02-18 14:23", "2017-05-08 23:42"));
         return (res);
     }
 
