@@ -11,13 +11,15 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.Box;
+import javax.swing.BoxLayout;
 import java.awt.BorderLayout;
+
 import java.awt.Color;
 
 public class Fenetre extends JFrame{
 
     private JPanel pan = new JPanel();
-    private Box projectsPan = Box.createVerticalBox();
+    private JPanel projectsPan = new JPanel();
     private JScrollPane scroll = new JScrollPane(projectsPan, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
     private LinkedList<Project> projects; 
 
@@ -30,6 +32,7 @@ public class Fenetre extends JFrame{
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setVisible(true);
         this.setContentPane(pan);
+        projectsPan.setLayout(new BoxLayout(projectsPan, BoxLayout.PAGE_AXIS));
 
         JButton plusButton = new JButton("+");
         JPanel buttonPan = new JPanel();

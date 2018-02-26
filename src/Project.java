@@ -9,6 +9,8 @@ import javax.swing.JProgressBar;
 import java.awt.Dimension;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -45,9 +47,6 @@ public class Project extends JPanel{
         Duration totalTime = Duration.between(dateBeg, dateEnd);
         Duration passedTime = Duration.between(dateBeg, dateNow);
         int percent = (int)((double)passedTime.getSeconds() / (double)totalTime.getSeconds() * 100);
-        System.out.println("Total time:" + totalTime.getSeconds());
-        System.out.println("Passed time:" + passedTime.getSeconds());
-        System.out.println(percent);
 
         JProgressBar timeProgress = new JProgressBar();
         timeProgress.setStringPainted(true);
@@ -55,10 +54,37 @@ public class Project extends JPanel{
         timeProgress.setMaximum(100);
         timeProgress.setValue(percent);
         timeProgress.setBorderPainted(true);
-        timeProgress.setMinimumSize(new Dimension((int)timeProgress.getMaximumSize().getWidth(), (int)timeProgress.getMaximumSize().getHeight()));
+        //timeProgress.setMinimumSize(new Dimension((int)timeProgress.getMaximumSize().getWidth(), (int)timeProgress.getMaximumSize().getHeight()));
         component.add(timeProgress);
 
-        component.add(new JLabel("PROGRESS BAR"));
+        JPanel p2 = new JPanel();
+        p2.setLayout(new BoxLayout(p2, BoxLayout.LINE_AXIS));
+
+
+        JProgressBar workProgress = new JProgressBar();
+        workProgress.setStringPainted(true);
+        workProgress.setMinimum(0);
+        workProgress.setMaximum(100);
+        workProgress.setBorderPainted(true);
+        workProgress.setValue(0);
+
+        JButton minusButton = new JButton("-");
+        JButton plusButton = new JButton("+");
+        plusButton.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent event){
+                workProgress.setValue(workProgress.getValue() + 1);
+            }
+        });
+        minusButton.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent event){
+                workProgress.setValue(workProgress.getValue() - 1);
+            }
+        });
+
+        p2.add(minusButton);
+        p2.add(workProgress);
+        p2.add(plusButton);
+        component.add(p2);
 
         JPanel p3 = new JPanel();
         p3.setLayout(new BoxLayout(p3, BoxLayout.LINE_AXIS));
@@ -66,7 +92,7 @@ public class Project extends JPanel{
         p3.add(new JLabel(dateBeg.format(dateFormat)));
         p3.add(Box.createHorizontalGlue());
 
-        String state = dateNow.isBefore(dateEnd) ? new String("In progress") : new String("Finished");
+        String state = dateNow.isBefore(dateEnd) ? (dateNow.isBefore(dateBeg) ? new String("Not started yet") : new String("In progress")) : new String("Finished");
         p3.add(new JLabel(state));
         p3.add(Box.createHorizontalGlue());
 
@@ -75,6 +101,15 @@ public class Project extends JPanel{
 
         component.add(p3);
 
+        JPanel p4 = new JPanel();
+        p4.setLayout(new BoxLayout(p4, BoxLayout.LINE_AXIS));
+
+        JButton underButton = new JButton("v");
+
+        p4.add(Box.createHorizontalGlue());
+        p4.add(underButton);
+        p4.add(Box.createHorizontalGlue());
+        component.add(p4);
 
         component.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         Dimension minHeightDim = component.getMinimumSize();
