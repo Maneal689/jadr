@@ -21,7 +21,8 @@ public class Fenetre extends JFrame{
     private JPanel pan = new JPanel();
     private JPanel projectsPan = new JPanel();
     private JScrollPane scroll = new JScrollPane(projectsPan, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-    private LinkedList<Project> projects; 
+    public LinkedList<Project> projects; 
+    Fenetre self = this;
 
     public Fenetre(){
         //--- PARAMETRAGE DE LA FENETRE ---//
@@ -32,40 +33,47 @@ public class Fenetre extends JFrame{
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setVisible(true);
         this.setContentPane(pan);
-        projectsPan.setLayout(new BoxLayout(projectsPan, BoxLayout.PAGE_AXIS));
 
+        this.pan.setLayout(new BorderLayout());
+
+        //--- PROJETS ---//
+        this.projectsPan.setLayout(new BoxLayout(projectsPan, BoxLayout.PAGE_AXIS));
+        this.projects = getProjects();
+        addProjectsToPan();
+
+        //--- BOUTON ---//
         JButton plusButton = new JButton("+");
         JPanel buttonPan = new JPanel();
-
-        //--- CREATING BUTTON ---//
         buttonPan.setLayout(new BorderLayout());
         buttonPan.add(plusButton, BorderLayout.EAST);
 
-        //--- MISE EN PAGE ---//
-        //scroll.setViewportView(projectsPan);
-        pan.setLayout(new BorderLayout());
-        pan.add(scroll, BorderLayout.CENTER);
-        pan.add(buttonPan, BorderLayout.SOUTH);
-
-        //--- ADDING PROJECTS ---//
-        projects = getProjects();
-        ListIterator it = projects.listIterator();
-        while (it.hasNext()){
-            projectsPan.add((Project)it.next());
-        }
-
         plusButton.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent event){
-                projectsPan.add(new Project("test", "2018-09-23 21:56", "2019-01-01 23:42"));
-                setVisible(true);
+                projects.add(new Project("test", "2018-09-23 21:56", "2019-01-01 23:42", self));
+                addProjectsToPan();
             }
         });
+
+        //--- MISE EN PAGE ---//
+        pan.add(scroll, BorderLayout.CENTER);
+        pan.add(buttonPan, BorderLayout.SOUTH);
+        setVisible(true);
+    }
+
+    public void addProjectsToPan(){
+        this.projectsPan.removeAll();
+        ListIterator it = projects.listIterator();
+        while (it.hasNext()){
+           this.projectsPan.add((Project)it.next());
+        }
+        projectsPan.revalidate();
+        repaint();
     }
 
     private LinkedList<Project> getProjects(){
         LinkedList<Project> res = new LinkedList<Project>();
-        res.add(new Project("Projet 1", "2017-12-18 14:23", "2018-04-08 23:42"));
-        res.add(new Project("Projet 2", "2017-02-18 14:23", "2017-05-08 23:42"));
+        res.add(new Project("Projet 1", "2017-12-18 14:23", "2018-04-08 23:42", self));
+        res.add(new Project("Projet 2", "2017-02-18 14:23", "2017-05-08 23:42", self));
         return (res);
     }
 
