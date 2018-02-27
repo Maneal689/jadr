@@ -16,13 +16,23 @@ import java.awt.BorderLayout;
 
 import java.awt.Color;
 
+import java.io.ObjectOutputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.EOFException;
+import java.io.FileNotFoundException;
+import java.io.File;
+
 public class Fenetre extends JFrame{
 
     private JPanel pan = new JPanel();
     private JPanel projectsPan = new JPanel();
     private JScrollPane scroll = new JScrollPane(projectsPan, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
     public LinkedList<Project> projects; 
-    Fenetre self = this;
+    private Fenetre self = this;
+    private AddProjectDialog projectDialog;
 
     public Fenetre(){
         //--- PARAMETRAGE DE LA FENETRE ---//
@@ -49,8 +59,13 @@ public class Fenetre extends JFrame{
 
         plusButton.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent event){
-                projects.add(new Project("test", "2018-09-23 21:56", "2019-01-01 23:42", self));
-                addProjectsToPan();
+                ProjectInfo pInfo = new ProjectInfo();
+                projectDialog = new AddProjectDialog(self, pInfo);
+                projectDialog.dispose();
+                if (pInfo.isInitiate()){
+                    projects.add(new Project(pInfo, self));
+                    addProjectsToPan();
+                }
             }
         });
 
@@ -61,20 +76,46 @@ public class Fenetre extends JFrame{
     }
 
     public void addProjectsToPan(){
-        this.projectsPan.removeAll();
+        self.projectsPan.removeAll();
         ListIterator it = projects.listIterator();
-        while (it.hasNext()){
-           this.projectsPan.add((Project)it.next());
+        while (it.hasNext())
+            self.projectsPan.add((Project)it.next());
+        self.repaint();
+        self.setVisible(true);
+        saveProjects();
+    }
+
+    private void saveProjects(){
+        ObjectOutputStream oos;
+        try{
+            oos = new ObjectOutputStream(new FileOutputStream(new File("save.prj")));
+            ListIterator it = projects.listIterator();
+            while (it.hasNext())
+                oos.writeObject(((Project)it.next()).pInfo);
+            oos.close();
         }
-        projectsPan.revalidate();
-        repaint();
+        catch(FileNotFoundException e){e.printStackTrace();}
+        catch(IOException e){e.printStackTrace();}
     }
 
     private LinkedList<Project> getProjects(){
         LinkedList<Project> res = new LinkedList<Project>();
-        res.add(new Project("Projet 1", "2017-12-18 14:23", "2018-04-08 23:42", self));
-        res.add(new Project("Projet 2", "2017-02-18 14:23", "2017-05-08 23:42", self));
-        return (res);
+        ObjectInputStream ois = null;
+        try{
+            ois = new ObjectInputStream(new FileInputStream("save.prj"));
+            Project temp;
+            while(true)
+                res.add(new Project((ProjectInfo)ois.readObject(), self));
+        }
+        catch(FileNotFoundException e){e.printStackTrace();}
+        catch(ClassNotFoundException e){e.printStackTrace();}
+        catch(EOFException e){
+            if (ois != null)
+                ois.close();
+        }
+        finally{
+            return (res);
+        }
     }
 
     public static void main(String[] args)

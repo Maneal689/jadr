@@ -20,32 +20,40 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 
-public class Project extends JPanel{
-    String name;
-    DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-    LocalDateTime dateNow = LocalDateTime.now();
-    LocalDateTime dateBeg;
-    LocalDateTime dateEnd;
-    Fenetre parent;
-    Project self;
-    LinkedList<Project> projects;
+import java.io.Serializable;
+import java.io.ObjectOutputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.FileInputStream;
+
+
+public class Project extends JPanel implements Serializable{
+    private Fenetre parent;
+    private Project self;
+    public ProjectInfo pInfo;
+
     // Description dans le "?"
     // workProgress avancement
 
-    public Project(String name, String startDate, String endDate, Fenetre parent){
+    public Project(ProjectInfo pInfo, Fenetre parent){
         super();
         this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
         this.parent = parent;
         this.self = this;
-        dateBeg = LocalDateTime.parse(startDate, dateFormat);
-        dateEnd = LocalDateTime.parse(endDate, dateFormat);
+        this.pInfo = pInfo;
+        DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        LocalDateTime dateNow = LocalDateTime.now();
+        LocalDateTime dateBeg;
+        LocalDateTime dateEnd;
+        dateBeg = LocalDateTime.parse(pInfo.dateBegin, dateFormat);
+        dateEnd = LocalDateTime.parse(pInfo.dateEnd, dateFormat);
         JPanel component = new JPanel();
         component.setLayout(new BoxLayout(component, BoxLayout.PAGE_AXIS));
 
         //--- NAME && BUTTONS --//
         JPanel p1 = new JPanel();
         p1.setLayout(new BoxLayout(p1, BoxLayout.LINE_AXIS));
-        p1.add(new JLabel(name));
+        p1.add(new JLabel(pInfo.name));
         p1.add(Box.createHorizontalGlue());
         p1.add(new JButton("?"));
         p1.add(getDelButtons());
@@ -69,7 +77,7 @@ public class Project extends JPanel{
         workProgress.setMinimum(0);
         workProgress.setMaximum(100);
         workProgress.setBorderPainted(true);
-        workProgress.setValue(0);
+        workProgress.setValue(pInfo.progress);
         JButton minusButton = new JButton("-");
         JButton plusButton = new JButton("+");
         plusButton.addActionListener(new ActionListener(){
@@ -122,5 +130,9 @@ public class Project extends JPanel{
             }
         });
         return (delButton);
+    }
+
+    public String toString(){
+        return ("Name: " + this.pInfo.name + "\nProgress: " + this.pInfo.progress + "\nDate: " + this.pInfo.dateBegin);
     }
 }
