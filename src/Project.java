@@ -31,9 +31,13 @@ public class Project extends JPanel implements Serializable{
     private Fenetre parent;
     private Project self;
     public ProjectInfo pInfo;
-
-    // Description dans le "?"
-    // workProgress avancement
+    
+    private JLabel nameLabel;
+    private JProgressBar workProgress;
+    private JProgressBar timeProgress;
+    private JLabel dateBegLabel;
+    private JLabel dateEndLabel;
+    private JLabel projectStateLabel;
 
     public Project(ProjectInfo pInfo, Fenetre parent){
         super();
@@ -41,33 +45,42 @@ public class Project extends JPanel implements Serializable{
         this.parent = parent;
         this.self = this;
         this.pInfo = pInfo;
-        DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-        LocalDateTime dateNow = LocalDateTime.now();
-        LocalDateTime dateBeg;
-        LocalDateTime dateEnd;
-        dateBeg = LocalDateTime.parse(pInfo.dateBegin, dateFormat);
-        dateEnd = LocalDateTime.parse(pInfo.dateEnd, dateFormat);
+
+        nameLabel = new JLabel();
+        dateBegLabel = new JLabel();
+        dateEndLabel = new JLabel();
+        projectStateLabel = new JLabel();
+
+        workProgress = new JProgressBar();
+        timeProgress = new JProgressBar();
+
+        this.update();
+
         JPanel component = new JPanel();
         component.setLayout(new BoxLayout(component, BoxLayout.PAGE_AXIS));
 
         //--- NAME && BUTTONS --//
         JPanel p1 = new JPanel();
         p1.setLayout(new BoxLayout(p1, BoxLayout.LINE_AXIS));
-        p1.add(new JLabel(pInfo.name));
+        p1.add(nameLabel);
         p1.add(Box.createHorizontalGlue());
-        p1.add(new JButton("?"));
+
+        JButton editButton = new JButton("?");
+        editButton.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent event){
+                AddProjectDialog editor = new AddProjectDialog(parent, self.pInfo);
+                editor.dispose();
+                self.update();
+            }
+        });
+        p1.add(editButton);
         p1.add(getDelButtons());
 
-        //--- timeProgressBar ---//
-        Duration totalTime = Duration.between(dateBeg, dateEnd);
-        Duration passedTime = Duration.between(dateBeg, dateNow);
-        int percent = (int)((double)passedTime.getSeconds() / (double)totalTime.getSeconds() * 100);
-        JProgressBar timeProgress = new JProgressBar();
         timeProgress.setStringPainted(true);
         timeProgress.setMinimum(0);
         timeProgress.setMaximum(100);
-        timeProgress.setValue(percent);
         timeProgress.setBorderPainted(true);
+        //--- timeProgressBar ---//
 
         //--- workProgressBar ---//
         JPanel p2 = new JPanel();
@@ -95,14 +108,13 @@ public class Project extends JPanel implements Serializable{
         p2.add(plusButton);
 
         //--- DATE STATEMENT ---//
-        String state = dateNow.isBefore(dateEnd) ? (dateNow.isBefore(dateBeg) ? new String("Not started yet") : new String("In progress")) : new String("Finished");
         JPanel p3 = new JPanel();
         p3.setLayout(new BoxLayout(p3, BoxLayout.LINE_AXIS));
-        p3.add(new JLabel(dateBeg.format(dateFormat)));
+        p3.add(dateBegLabel);
         p3.add(Box.createHorizontalGlue());
-        p3.add(new JLabel(state));
+        p3.add(projectStateLabel);
         p3.add(Box.createHorizontalGlue());
-        p3.add(new JLabel(dateEnd.format(dateFormat)));
+        p3.add(dateEndLabel);
 
 
         component.add(p1);
@@ -113,6 +125,27 @@ public class Project extends JPanel implements Serializable{
 
         this.add(component);
         this.add(Box.createVerticalStrut(5));
+    }
+    
+    void update(){
+        DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        LocalDateTime dateNow = LocalDateTime.now();
+        LocalDateTime dateBeg;
+        LocalDateTime dateEnd;
+        dateBeg = LocalDateTime.parse(pInfo.dateBegin, dateFormat);
+        dateEnd = LocalDateTime.parse(pInfo.dateEnd, dateFormat);
+
+        Duration totalTime = Duration.between(dateBeg, dateEnd);
+        Duration passedTime = Duration.between(dateBeg, dateNow);
+        int percent = (int)((double)passedTime.getSeconds() / (double)totalTime.getSeconds() * 100);
+        String state = dateNow.isBefore(dateEnd) ? (dateNow.isBefore(dateBeg) ? new String("Not started yet") : new String("In progress")) : new String("Finished");
+
+        timeProgress.setValue(percent);
+        workProgress.setValue(self.pInfo.progress);
+        nameLabel.setText(self.pInfo.name);
+        dateBegLabel.setText(self.pInfo.dateBegin);
+        dateEndLabel.setText(self.pInfo.dateEnd);
+        projectStateLabel.setText(state);
     }
 
     JButton getDelButtons(){

@@ -10,6 +10,7 @@ import javax.swing.JDialog;
 import javax.swing.JScrollPane;
 import javax.swing.JButton;
 import javax.swing.JSlider;
+import javax.swing.JTextArea;
 import javax.swing.BorderFactory;
 
 import java.awt.event.ActionEvent;
@@ -47,7 +48,7 @@ public class AddProjectDialog extends JDialog{
         JPanel projectNamePan = new JPanel();
         projectNamePan.setLayout(new BoxLayout(projectNamePan, BoxLayout.LINE_AXIS));
         JLabel labName = new JLabel("Name: ");
-        JTextField nameField = new JTextField();
+        JTextField nameField = new JTextField(this.pInfo.isInitiate() ? this.pInfo.name : new String(""));
         nameField.setMaximumSize(new Dimension((int)nameField.getMaximumSize().getWidth(), (int)nameField.getMinimumSize().getHeight()));
         projectNamePan.add(labName);
         projectNamePan.add(Box.createHorizontalGlue());
@@ -56,8 +57,12 @@ public class AddProjectDialog extends JDialog{
 
         JPanel descriptionPan = new JPanel();
         descriptionPan.setLayout(new BoxLayout(descriptionPan, BoxLayout.PAGE_AXIS));
-        JTextField descriptionField = new JTextField();
-        descriptionPan.add(descriptionField);
+        JTextArea descriptionField = new JTextArea(this.pInfo.isInitiate() ? this.pInfo.description : new String(""));
+        descriptionField.setLineWrap(true);
+        descriptionField.setWrapStyleWord(true);
+        JScrollPane scrollDescArea = new JScrollPane(descriptionField);
+        scrollDescArea.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        descriptionPan.add(scrollDescArea);
         descriptionPan.setBorder(BorderFactory.createTitledBorder("Description"));
 
         JPanel sliderPan = new JPanel();
@@ -66,7 +71,7 @@ public class AddProjectDialog extends JDialog{
         JSlider workSlider = new JSlider();
         workSlider.setMaximum(100);
         workSlider.setMinimum(0);
-        workSlider.setValue(0);
+        workSlider.setValue(this.pInfo.isInitiate() ? this.pInfo.progress : 0);
         workSlider.setPaintTicks(true);
         workSlider.setPaintLabels(true);
         workSlider.setMinorTickSpacing(5);
@@ -76,14 +81,14 @@ public class AddProjectDialog extends JDialog{
         //--- DATES ---//
         Box datesBeginPan = Box.createHorizontalBox();
         JLabel beginLab = new JLabel("Begin date\n(yyyy-MM-dd HH:mm): ");
-        JTextField beginField = new JTextField();
+        JTextField beginField = new JTextField(this.pInfo.isInitiate() ? this.pInfo.dateBegin : new String(""));
         datesBeginPan.add(beginLab);
         datesBeginPan.add(beginField);
         beginField.setMaximumSize(new Dimension((int)beginField.getMaximumSize().getWidth(), (int)beginField.getMinimumSize().getHeight()));
 
         Box datesEndPan = Box.createHorizontalBox();
         JLabel endLab = new JLabel("End date: ");
-        JTextField endField = new JTextField();
+        JTextField endField = new JTextField(this.pInfo.isInitiate() ? this.pInfo.dateEnd : new String(""));
         datesEndPan.add(endLab);
         datesEndPan.add(endField);
         endField.setMaximumSize(new Dimension((int)endField.getMaximumSize().getWidth(), (int)endField.getMinimumSize().getHeight()));
