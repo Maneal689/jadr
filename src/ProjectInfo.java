@@ -22,6 +22,6 @@ public class ProjectInfo implements Serializable{
     }
 
     public String toString(){
-        return ("Name: " + this.name + "\nDescription: " + this.description);
+        return ("Name: " + this.name + "\nDescription: " + this.description + "\nWork Progress: " + this.progress);
     }
 }

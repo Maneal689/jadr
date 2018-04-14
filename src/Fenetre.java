@@ -31,6 +31,7 @@ public class Fenetre extends JFrame{
     private JPanel projectsPan = new JPanel();
     private JScrollPane scroll = new JScrollPane(projectsPan, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
     public LinkedList<Project> projects; 
+    protected boolean initiate = false;
     private Fenetre self = this;
     private AddProjectDialog projectDialog;
 
@@ -73,6 +74,8 @@ public class Fenetre extends JFrame{
         pan.add(scroll, BorderLayout.CENTER);
         pan.add(buttonPan, BorderLayout.SOUTH);
         setVisible(true);
+
+        this.initiate = true;
     }
 
     public void addProjectsToPan(){
@@ -85,7 +88,7 @@ public class Fenetre extends JFrame{
         saveProjects();
     }
 
-    private void saveProjects(){
+    protected void saveProjects(){
         ObjectOutputStream oos;
         try{
             oos = new ObjectOutputStream(new FileOutputStream(new File("save.prj")));

@@ -85,22 +85,23 @@ public class Project extends JPanel implements Serializable{
         //--- workProgressBar ---//
         JPanel p2 = new JPanel();
         p2.setLayout(new BoxLayout(p2, BoxLayout.LINE_AXIS));
-        JProgressBar workProgress = new JProgressBar();
         workProgress.setStringPainted(true);
         workProgress.setMinimum(0);
         workProgress.setMaximum(100);
         workProgress.setBorderPainted(true);
-        workProgress.setValue(pInfo.progress);
         JButton minusButton = new JButton("-");
         JButton plusButton = new JButton("+");
         plusButton.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent event){
-                workProgress.setValue(workProgress.getValue() + 1);
+                self.pInfo.progress += 1;
+                self.update();
             }
         });
         minusButton.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent event){
-                workProgress.setValue(workProgress.getValue() - 1);
+                self.pInfo.progress -= 1;
+                self.update();
+                //workProgress.setValue(workProgress.getValue() - 1);
             }
         });
         p2.add(minusButton);
@@ -146,6 +147,9 @@ public class Project extends JPanel implements Serializable{
         dateBegLabel.setText(self.pInfo.dateBegin);
         dateEndLabel.setText(self.pInfo.dateEnd);
         projectStateLabel.setText(state);
+        if (self.parent.initiate){
+            self.parent.saveProjects();
+        }
     }
 
     JButton getDelButtons(){
